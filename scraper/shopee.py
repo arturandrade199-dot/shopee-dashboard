@@ -2,19 +2,18 @@
 Scraper para Shopee Brasil.
 
 A Shopee requer autenticação em todos os endpoints /api/v4/ desde 2025.
-Este scraper usa Playwright com sessão autenticada para contornar isso.
+Solução: Playwright com sessão autenticada. Os cookies ficam salvos em
+data/shopee_session.json (gerado por setup_session.py ou import_cookies.py).
 
-Fluxo de uso:
-  1. Execute uma vez: python setup_session.py  (abre browser, faça login)
-  2. Execute normalmente: python main.py       (usa sessão salva)
+Chamadas de API são feitas via fetch() dentro do contexto do browser,
+o que inclui os cookies de sessão automaticamente (same-origin).
 
-Estratégias de coleta (em ordem):
-  1. Flash Sale   — /api/v4/flash_sale/          (maiores descontos)
-  2. Busca        — /api/v4/search/search_items   (por palavra-chave)
-  3. Recomendação — /api/v4/recommend/            (destaques do dia)
+Fluxo:
+  1. execute: python import_cookies.py   (uma vez, ou quando os cookies expirarem)
+  2. execute: python main.py
 
 Preços na API Shopee: armazenados × 100.000.
-Ex: R$ 29,90 → 2.990.000 no JSON → / 100_000 → 29.90
+Ex: R$ 29,90 → 2.990.000 → / 100_000 → 29,90
 """
 
 import json
@@ -32,18 +31,17 @@ from .models import Product
 
 logger = logging.getLogger(__name__)
 
-_PRICE_FACTOR   = 100_000
-_SESSION_FILE   = Path("data/shopee_session.json")
-_BASE_URL       = "https://shopee.com.br"
-
+_PRICE_FACTOR    = 100_000
+_SESSION_FILE    = Path("data/shopee_session.json")
+_BASE_URL        = "https://shopee.com.br"
 _SEARCH_KEYWORDS = ["oferta", "promocao", "desconto"]
 
 
 class ShopeeScraper:
 
-    def __init__(self, delay_min: float = 1.5, delay_max: float = 3.5):
-        self._delay_min = delay_min
-        self._delay_max = delay_max
+    def __init__(self, delay_min: float = 1.5, delay_max: float = 3.0):
+        self._delay_min  = delay_min
+        self._delay_max  = delay_max
         self._playwright = None
         self._browser    = None
         self._ctx: Optional[BrowserContext] = None
@@ -55,13 +53,19 @@ class ShopeeScraper:
         self._playwright = sync_playwright().start()
         self._browser = self._playwright.chromium.launch(
             headless=True,
-            args=[
-                "--disable-blink-features=AutomationControlled",
-                "--no-sandbox",
-            ],
+            args=["--disable-blink-features=AutomationControlled", "--no-sandbox"],
         )
-        self._ctx = self._load_context()
+        self._ctx  = self._load_context()
         self._page = self._ctx.new_page()
+        self._page.set_extra_http_headers({
+            "Accept-Language":    "pt-BR,pt;q=0.9",
+            "x-shopee-language":  "pt-BR",
+            "x-requested-with":   "XMLHttpRequest",
+            "x-api-source":       "pc",
+        })
+        # Navega para a homepage para estabelecer o domínio e ativar os cookies
+        logger.info("Inicializando sessao em %s ...", _BASE_URL)
+        self._page.goto(_BASE_URL, wait_until="domcontentloaded", timeout=20000)
         return self
 
     def __exit__(self, *_):
@@ -71,10 +75,9 @@ class ShopeeScraper:
             self._playwright.stop()
 
     def _load_context(self) -> BrowserContext:
-        """Cria contexto do browser com ou sem sessão salva."""
         if _SESSION_FILE.exists():
             try:
-                data = json.loads(_SESSION_FILE.read_text(encoding="utf-8"))
+                data    = json.loads(_SESSION_FILE.read_text(encoding="utf-8"))
                 storage = data.get("storage") or {}
                 ctx = self._browser.new_context(
                     storage_state=storage,
@@ -86,71 +89,78 @@ class ShopeeScraper:
                         "Chrome/120.0.0.0 Mobile Safari/537.36"
                     ),
                 )
-                logger.info("Sessao carregada de %s", _SESSION_FILE)
+                logger.info("Sessao carregada (%d cookies)", len(storage.get("cookies", [])))
                 return ctx
             except Exception as exc:
-                logger.warning("Falha ao carregar sessao: %s — prosseguindo sem autenticacao", exc)
+                logger.warning("Falha ao carregar sessao: %s", exc)
 
-        logger.warning(
-            "Sessao nao encontrada. Execute 'python setup_session.py' para autenticar. "
-            "Tentando sem autenticacao..."
-        )
-        return self._browser.new_context(
-            locale="pt-BR",
-            timezone_id="America/Sao_Paulo",
-        )
+        logger.warning("Sessao nao encontrada. Execute python import_cookies.py")
+        return self._browser.new_context(locale="pt-BR", timezone_id="America/Sao_Paulo")
 
-    # ─── HTTP via Playwright ──────────────────────────────────
+    # ─── Chamada de API via fetch() no browser ────────────────
 
     def _api_get(self, path: str, params: dict = None) -> Optional[dict]:
         """
-        Faz uma requisição GET à API Shopee usando o contexto autenticado do browser.
-        Mais lento que requests puro, mas passa pela autenticação de sessão.
+        Executa fetch() dentro do contexto autenticado do browser.
+        Os cookies de sessão são incluídos automaticamente (same-origin).
         """
-        url = f"{_BASE_URL}{path}"
+        qs = ""
         if params:
-            qs = "&".join(f"{k}={v}" for k, v in params.items())
-            url = f"{url}?{qs}"
+            qs = "?" + "&".join(f"{k}={v}" for k, v in params.items())
+        full_url = f"{_BASE_URL}{path}{qs}"
 
         time.sleep(random.uniform(self._delay_min, self._delay_max))
 
+        js = f"""
+        async () => {{
+            try {{
+                const csrfMatch = document.cookie.match(/csrftoken=([^;]+)/);
+                const csrf = csrfMatch ? csrfMatch[1] : '';
+                const resp = await fetch({json.dumps(full_url)}, {{
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {{
+                        'Accept': 'application/json',
+                        'x-requested-with': 'XMLHttpRequest',
+                        'x-shopee-language': 'pt-BR',
+                        'x-csrftoken': csrf,
+                        'x-api-source': 'pc',
+                    }}
+                }});
+                if (!resp.ok) return {{ _http_status: resp.status }};
+                return await resp.json();
+            }} catch(e) {{
+                return {{ _error: e.toString() }};
+            }}
+        }}
+        """
+
         try:
-            response_data = {}
-
-            def handle_response(response):
-                if path in response.url and response.status == 200:
-                    try:
-                        response_data["json"] = response.json()
-                    except Exception:
-                        pass
-
-            self._page.on("response", handle_response)
-            self._page.goto(url, wait_until="networkidle", timeout=25000)
-            self._page.remove_listener("response", handle_response)
-
-            if "json" in response_data:
-                data = response_data["json"]
-                if isinstance(data, dict) and data.get("error", 0) not in (0, None):
-                    logger.warning("API erro %s em %s", data.get("error"), path)
-                    return None
-                return data
-
-            # Tenta extrair JSON do body da pagina (Shopee retorna JSON puro)
-            body = self._page.content()
-            import re
-            match = re.search(r'(\{.*\})', body, re.DOTALL)
-            if match:
-                return json.loads(match.group(1))
-
+            data = self._page.evaluate(js)
         except Exception as exc:
-            logger.error("Erro ao chamar %s: %s", path, exc)
+            logger.error("Erro no fetch JS: %s", exc)
+            return None
 
-        return None
+        if not isinstance(data, dict):
+            return None
+
+        if "_error" in data:
+            logger.error("Erro JS em %s: %s", path, data["_error"])
+            return None
+
+        if "_http_status" in data:
+            logger.warning("HTTP %s em %s", data["_http_status"], path)
+            return None
+
+        if data.get("error", 0) not in (0, None, ""):
+            logger.warning("API erro code=%s em %s", data.get("error"), path)
+            return None
+
+        return data
 
     # ─── Estratégia 1: Flash Sale ─────────────────────────────
 
     def fetch_flash_sale(self) -> List[Product]:
-        """Produtos em promoção relâmpago."""
         data = self._api_get("/api/v4/flash_sale/get_all_sessions",
                              params={"tracker_info_version": 1})
         if not data:
@@ -158,13 +168,10 @@ class ShopeeScraper:
 
         sessions = data.get("data", {}).get("sessions") or []
         if not sessions:
-            logger.info("Flash Sale: nenhuma sessao ativa")
+            logger.info("Flash Sale: nenhuma sessao ativa no momento")
             return []
 
-        session_id = (
-            sessions[0].get("promotionid")
-            or sessions[0].get("sessionid")
-        )
+        session_id = sessions[0].get("promotionid") or sessions[0].get("sessionid")
         if not session_id:
             return []
 
@@ -189,10 +196,9 @@ class ShopeeScraper:
         logger.info("Flash Sale: %d produtos", len(products))
         return products
 
-    # ─── Estratégia 2: Busca ─────────────────────────────────
+    # ─── Estratégia 2: Busca por palavra-chave ────────────────
 
     def fetch_search(self, keyword: str = "", limit: int = 60) -> List[Product]:
-        """Busca por palavra-chave com filtro de desconto."""
         params = {
             "by":                   "pop",
             "limit":                limit,
@@ -219,10 +225,9 @@ class ShopeeScraper:
         logger.info("Busca '%s': %d produtos", keyword or "(geral)", len(products))
         return products
 
-    # ─── Estratégia 3: Recomendações ─────────────────────────
+    # ─── Estratégia 3: Recomendações diárias ─────────────────
 
     def fetch_daily_discover(self) -> List[Product]:
-        """Produtos em destaque curados pela Shopee."""
         data = self._api_get(
             "/api/v4/recommend/recommend_items",
             params={"bundle": "daily_discover_main", "limit": 60, "offset": 0},
@@ -243,7 +248,6 @@ class ShopeeScraper:
     # ─── Orquestrador ─────────────────────────────────────────
 
     def fetch_all(self) -> List[Product]:
-        """Executa todas as estratégias e retorna lista deduplicada."""
         all_products: List[Product] = []
         seen: set = set()
 
@@ -308,11 +312,11 @@ class ShopeeScraper:
 
             product_url = f"{_BASE_URL}/product/{shop_id}/{item_id}"
 
-            rating_info  = item.get("item_rating") or {}
-            rating       = float(rating_info.get("rating_star") or 0)
-            sold         = int(item.get("sold") or item.get("historical_sold") or 0)
-            stock        = int(item.get("stock") or item.get("stock_count") or 0)
-            shop_name    = str(item.get("shop_name") or item.get("shop_location") or "")
+            rating_info = item.get("item_rating") or {}
+            rating      = float(rating_info.get("rating_star") or 0)
+            sold        = int(item.get("sold") or item.get("historical_sold") or 0)
+            stock       = int(item.get("stock") or item.get("stock_count") or 0)
+            shop_name   = str(item.get("shop_name") or item.get("shop_location") or "")
 
             product = Product(
                 source         = "shopee",

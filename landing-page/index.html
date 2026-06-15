@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="description" content="Receba as melhores ofertas e promoções do Brasil direto no seu WhatsApp. Até 80% de desconto todo dia." />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta property="og:title" content="Ofertas Imperdíveis no WhatsApp 🔥" />
+  <meta property="og:description" content="Entre no grupo e receba promoções com até 80% OFF direto no seu celular." />
+  <title>Ofertas Imperdíveis — Entre no Grupo VIP</title>
+
+  <!-- ═══════════════════════════════════════════
+       META PIXEL — substitua YOUR_PIXEL_ID
+  ═══════════════════════════════════════════ -->
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', 'YOUR_PIXEL_ID');
+    fbq('track', 'PageView');
+  </script>
+  <noscript>
+    <img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID&ev=PageView&noscript=1" />
+  </noscript>
+
+  <!-- ═══════════════════════════════════════════
+       GOOGLE TAG MANAGER — substitua GTM-XXXXXXX
+  ═══════════════════════════════════════════ -->
+  <script>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;
+    j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+    f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-XXXXXXX');
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Reset ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #f5f5f5;
+      color: #1a1a1a;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Variáveis ──────────────────────────── */
+    :root {
+      --green:      #25D366;
+      --green-dark: #128C7E;
+      --green-deep: #075E54;
+      --red:        #FF3B30;
+      --yellow:     #FFD60A;
+      --text:       #1a1a1a;
+      --muted:      #6b7280;
+      --radius:     14px;
+      --shadow:     0 4px 24px rgba(0,0,0,.12);
+    }
+
+    /* ── Utilitários ────────────────────────── */
+    .container { max-width: 480px; margin: 0 auto; padding: 0 20px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+    /* ═══════════════════════════════════════════
+       HEADER
+    ═══════════════════════════════════════════ */
+    .header {
+      background: var(--green-deep);
+      padding: 14px 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header__brand {
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .header__badge {
+      background: var(--red);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      animation: pulse-badge 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse-badge {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.7; }
+    }
+
+    /* ═══════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════ */
+    .hero {
+      background: linear-gradient(160deg, var(--green-deep) 0%, var(--green-dark) 100%);
+      color: #fff;
+      padding: 40px 20px 48px;
+      text-align: center;
+    }
+    .hero__emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+    .hero__title {
+      font-size: clamp(1.65rem, 6.5vw, 2rem);
+      font-weight: 900;
+      line-height: 1.18;
+      letter-spacing: -0.5px;
+      margin-bottom: 14px;
+    }
+    .hero__title span { color: var(--yellow); }
+    .hero__subtitle {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.85);
+      max-width: 340px;
+      margin: 0 auto 28px;
+    }
+
+    /* ── CTA Button ─────────────────────────── */
+    .btn-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      max-width: 360px;
+      margin: 0 auto;
+      padding: 18px 24px;
+      background: var(--green);
+      color: #fff;
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 800;
+      text-decoration: none;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      box-shadow: 0 6px 28px rgba(37,211,102,0.45);
+      animation: pulse-btn 2s ease-in-out infinite;
+      transition: transform .15s, box-shadow .15s;
+      letter-spacing: 0.2px;
+    }
+    .btn-cta:active { transform: scale(0.97); }
+    @keyframes pulse-btn {
+      0%, 100% { box-shadow: 0 6px 28px rgba(37,211,102,0.45); }
+      50%       { box-shadow: 0 6px 40px rgba(37,211,102,0.75); }
+    }
+    .btn-cta svg { flex-shrink: 0; width: 22px; height: 22px; }
+    .btn-cta--secondary {
+      background: #fff;
+      color: var(--green-deep);
+      box-shadow: 0 4px 16px rgba(0,0,0,.15);
+      animation: none;
+      margin-top: 12px;
+    }
+    .btn-cta--secondary:active { transform: scale(0.97); }
+
+    .hero__disclaimer {
+      margin-top: 16px;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* ═══════════════════════════════════════════
+       SOCIAL PROOF BAR
+    ═══════════════════════════════════════════ */
+    .proof-bar {
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 16px 20px;
+    }
+    .proof-bar__inner {
+      display: flex;
+      justify-content: space-around;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .proof-item { text-align: center; }
+    .proof-item__value {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: var(--green-dark);
+      display: block;
+    }
+    .proof-item__label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .proof-bar__divider {
+      width: 1px;
+      background: #e5e7eb;
+      margin: 4px 0;
+    }
+
+    /* ═══════════════════════════════════════════
+       SECTION LABELS
+    ═══════════════════════════════════════════ */
+    .section { padding: 32px 20px; }
+    .section--alt { background: #fff; }
+    .section__container { max-width: 480px; margin: 0 auto; }
+    .section__label {
+      display: inline-block;
+      background: #dcfce7;
+      color: var(--green-dark);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+    .section__title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 20px;
+      letter-spacing: -0.3px;
+    }
+
+    /* ═══════════════════════════════════════════
+       BENEFITS
+    ═══════════════════════════════════════════ */
+    .benefits { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .benefit {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    }
+    .benefit__icon {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: #dcfce7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+    .benefit__title { font-weight: 700; font-size: 0.95rem; margin-bottom: 2px; }
+    .benefit__desc { font-size: 0.82rem; color: var(--muted); }
+
+    /* ═══════════════════════════════════════════
+       OFERTAS EXEMPLO
+    ═══════════════════════════════════════════ */
+    .deals { display: flex; flex-direction: column; gap: 12px; }
+    .deal {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
+      position: relative;
+      overflow: hidden;
+    }
+    .deal::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      background: var(--green);
+      border-radius: 4px 0 0 4px;
+    }
+    .deal__emoji {
+      font-size: 2rem;
+      flex-shrink: 0;
+      width: 52px;
+      text-align: center;
+    }
+    .deal__info { flex: 1; min-width: 0; }
+    .deal__name {
+      font-weight: 700;
+      font-size: 0.88rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+    .deal__prices { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .deal__original { font-size: 0.78rem; color: var(--muted); text-decoration: line-through; }
+    .deal__current { font-size: 1.05rem; font-weight: 900; color: var(--green-dark); }
+    .deal__badge {
+      background: var(--red);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 20px;
+    }
+
+    /* ═══════════════════════════════════════════
+       URGÊNCIA
+    ═══════════════════════════════════════════ */
+    .urgency {
+      background: linear-gradient(135deg, #fff7ed 0%, #fff 100%);
+      border: 2px solid #fed7aa;
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+    }
+    .urgency__title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #c2410c;
+      margin-bottom: 4px;
+    }
+    .urgency__subtitle { font-size: 0.82rem; color: var(--muted); margin-bottom: 14px; }
+    .progress-bar {
+      background: #fee2e2;
+      border-radius: 999px;
+      height: 10px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .progress-bar__fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green) 0%, #16a34a 100%);
+      border-radius: 999px;
+      width: 83%;
+      animation: fill-anim 1.2s ease-out;
+    }
+    @keyframes fill-anim { from { width: 0; } to { width: 83%; } }
+    .progress-bar__label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #c2410c;
+    }
+
+    /* ═══════════════════════════════════════════
+       TESTIMONIALS
+    ═══════════════════════════════════════════ */
+    .testimonials { display: flex; flex-direction: column; gap: 12px; }
+    .testimonial {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    }
+    .testimonial__header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .testimonial__avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+    .testimonial__name { font-weight: 700; font-size: 0.88rem; }
+    .testimonial__stars { color: var(--yellow); font-size: 0.8rem; }
+    .testimonial__text { font-size: 0.85rem; color: #374151; line-height: 1.5; }
+
+    /* ═══════════════════════════════════════════
+       FINAL CTA
+    ═══════════════════════════════════════════ */
+    .final-cta {
+      background: linear-gradient(160deg, var(--green-deep) 0%, var(--green-dark) 100%);
+      padding: 40px 20px;
+      text-align: center;
+      color: #fff;
+    }
+    .final-cta__title {
+      font-size: 1.4rem;
+      font-weight: 900;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+    .final-cta__subtitle {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 24px;
+    }
+
+    /* ═══════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════ */
+    .footer {
+      background: #111;
+      color: rgba(255,255,255,0.4);
+      text-align: center;
+      padding: 20px;
+      font-size: 0.72rem;
+      line-height: 1.7;
+    }
+    .footer a { color: rgba(255,255,255,0.5); text-decoration: none; }
+
+    /* ═══════════════════════════════════════════
+       FLOATING CTA (mobile sticky)
+    ═══════════════════════════════════════════ */
+    .float-cta {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 20px 20px;
+      background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+      z-index: 200;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .float-cta.visible { opacity: 1; pointer-events: all; }
+    .float-cta .btn-cta { box-shadow: 0 8px 32px rgba(0,0,0,.4); }
+
+    /* ═══════════════════════════════════════════
+       DESKTOP ADJUSTMENTS
+    ═══════════════════════════════════════════ */
+    @media (min-width: 600px) {
+      .hero { padding: 60px 24px 64px; }
+      .hero__title { font-size: 2.2rem; }
+      .float-cta { display: none; }
+      .benefit { padding: 20px; }
+      .section { padding: 40px 24px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- GTM noscript -->
+  <noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+      height="0" width="0" style="display:none;visibility:hidden"></iframe>
+  </noscript>
+
+  <!-- ═══════════════════════════════════════════
+       HEADER
+  ═══════════════════════════════════════════ -->
+  <header class="header">
+    <div class="header__brand">
+      <!-- WhatsApp icon -->
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+      Grupo VIP de Ofertas
+      <span class="header__badge">ao vivo</span>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════
+       HERO
+  ═══════════════════════════════════════════ -->
+  <section class="hero">
+    <span class="hero__emoji">🔥</span>
+    <h1 class="hero__title">
+      Economize todo dia com as<br>
+      <span>melhores ofertas do Brasil</span>
+    </h1>
+    <p class="hero__subtitle">
+      Receba promoções com até 80% OFF direto no seu WhatsApp — antes de todo mundo.
+    </p>
+
+    <a href="#" class="btn-cta" id="cta-hero" onclick="entrarGrupo(event)">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+      ENTRAR NO GRUPO AGORA
+    </a>
+
+    <p class="hero__disclaimer">✅ Gratuito &nbsp;·&nbsp; ✅ Sem spam &nbsp;·&nbsp; ✅ Saia quando quiser</p>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SOCIAL PROOF BAR
+  ═══════════════════════════════════════════ -->
+  <div class="proof-bar">
+    <div class="proof-bar__inner">
+      <div class="proof-item">
+        <span class="proof-item__value" id="counter-members">4.872</span>
+        <span class="proof-item__label">membros ativos</span>
+      </div>
+      <div class="proof-bar__divider"></div>
+      <div class="proof-item">
+        <span class="proof-item__value">4x</span>
+        <span class="proof-item__label">ofertas por dia</span>
+      </div>
+      <div class="proof-bar__divider"></div>
+      <div class="proof-item">
+        <span class="proof-item__value">80%</span>
+        <span class="proof-item__label">desconto máx.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       BENEFITS
+  ═══════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section__container">
+      <span class="section__label">O que você vai receber</span>
+      <h2 class="section__title">Tudo que você precisa para economizar de verdade</h2>
+
+      <ul class="benefits">
+        <li class="benefit">
+          <div class="benefit__icon">🏷️</div>
+          <div>
+            <p class="benefit__title">Ofertas com desconto real</p>
+            <p class="benefit__desc">Filtramos apenas produtos com desconto mínimo de 25% — sem enganação de "preço de referência".</p>
+          </div>
+        </li>
+        <li class="benefit">
+          <div class="benefit__icon">⚡</div>
+          <div>
+            <p class="benefit__title">Primeiro a saber</p>
+            <p class="benefit__desc">Enviamos as promoções assim que saem, antes de viralizar e esgotar.</p>
+          </div>
+        </li>
+        <li class="benefit">
+          <div class="benefit__icon">🎟️</div>
+          <div>
+            <p class="benefit__title">Cupons exclusivos</p>
+            <p class="benefit__desc">Buscamos cupons ativos da Cuponomia e Pelando para empilhar com o desconto da oferta.</p>
+          </div>
+        </li>
+        <li class="benefit">
+          <div class="benefit__icon">🛒</div>
+          <div>
+            <p class="benefit__title">Todas as grandes lojas</p>
+            <p class="benefit__desc">Shopee, Mercado Livre, Amazon e mais — em um único lugar, no seu celular.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       EXEMPLOS DE OFERTAS
+  ═══════════════════════════════════════════ -->
+  <section class="section section--alt">
+    <div class="section__container">
+      <span class="section__label">Ofertas recentes</span>
+      <h2 class="section__title">O tipo de promoção que você vai receber</h2>
+
+      <div class="deals">
+        <div class="deal">
+          <div class="deal__emoji">📱</div>
+          <div class="deal__info">
+            <p class="deal__name">Smartphone Samsung Galaxy A15</p>
+            <div class="deal__prices">
+              <span class="deal__original">R$ 1.099</span>
+              <span class="deal__current">R$ 649</span>
+              <span class="deal__badge">41% OFF</span>
+            </div>
+          </div>
+        </div>
+        <div class="deal">
+          <div class="deal__emoji">🎧</div>
+          <div class="deal__info">
+            <p class="deal__name">Fone Bluetooth JBL Tune 510BT</p>
+            <div class="deal__prices">
+              <span class="deal__original">R$ 299</span>
+              <span class="deal__current">R$ 139</span>
+              <span class="deal__badge">54% OFF</span>
+            </div>
+          </div>
+        </div>
+        <div class="deal">
+          <div class="deal__emoji">🏠</div>
+          <div class="deal__info">
+            <p class="deal__name">Air Fryer Mondial 4L</p>
+            <div class="deal__prices">
+              <span class="deal__original">R$ 259</span>
+              <span class="deal__current">R$ 129</span>
+              <span class="deal__badge">50% OFF</span>
+            </div>
+          </div>
+        </div>
+        <div class="deal">
+          <div class="deal__emoji">👟</div>
+          <div class="deal__info">
+            <p class="deal__name">Tênis Nike Masculino Revolution</p>
+            <div class="deal__prices">
+              <span class="deal__original">R$ 349</span>
+              <span class="deal__current">R$ 199</span>
+              <span class="deal__badge">43% OFF</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       URGÊNCIA
+  ═══════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section__container">
+      <div class="urgency">
+        <p class="urgency__title">⚠️ Grupo quase cheio!</p>
+        <p class="urgency__subtitle">Cada grupo tem limite de 1.000 membros. Não perca sua vaga.</p>
+        <div class="progress-bar">
+          <div class="progress-bar__fill"></div>
+        </div>
+        <p class="progress-bar__label" id="spots-label">830 de 1.000 vagas preenchidas — restam apenas <strong>170</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       DEPOIMENTOS
+  ═══════════════════════════════════════════ -->
+  <section class="section section--alt">
+    <div class="section__container">
+      <span class="section__label">Quem já está no grupo</span>
+      <h2 class="section__title">O que os membros estão dizendo</h2>
+
+      <div class="testimonials">
+        <div class="testimonial">
+          <div class="testimonial__header">
+            <div class="testimonial__avatar">MR</div>
+            <div>
+              <p class="testimonial__name">Mariana R.</p>
+              <p class="testimonial__stars">★★★★★</p>
+            </div>
+          </div>
+          <p class="testimonial__text">"Entrei ontem e já comprei um fone que tava querendo há meses por menos da metade do preço. Incrível demais!"</p>
+        </div>
+        <div class="testimonial">
+          <div class="testimonial__header">
+            <div class="testimonial__avatar" style="background:#128C7E">CF</div>
+            <div>
+              <p class="testimonial__name">Carlos F.</p>
+              <p class="testimonial__stars">★★★★★</p>
+            </div>
+          </div>
+          <p class="testimonial__text">"Economizei R$ 300 em eletrônicos só nesse mês. As ofertas chegam antes de qualquer outro grupo que participo."</p>
+        </div>
+        <div class="testimonial">
+          <div class="testimonial__header">
+            <div class="testimonial__avatar" style="background:#075E54">JS</div>
+            <div>
+              <p class="testimonial__name">Juliana S.</p>
+              <p class="testimonial__stars">★★★★★</p>
+            </div>
+          </div>
+          <p class="testimonial__text">"O melhor é que vem com cupom já calculado. Sem ter que ficar pesquisando. Muito prático!"</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       FINAL CTA
+  ═══════════════════════════════════════════ -->
+  <section class="final-cta">
+    <h2 class="final-cta__title">Não fique de fora das<br>melhores ofertas 🔥</h2>
+    <p class="final-cta__subtitle">Clique abaixo e entre no grupo agora — é gratuito.</p>
+
+    <a href="#" class="btn-cta" id="cta-final" onclick="entrarGrupo(event)">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="width:22px;height:22px">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+      GARANTIR MINHA VAGA AGORA
+    </a>
+
+    <a href="#" class="btn-cta btn-cta--secondary" onclick="entrarGrupo(event)">
+      Entrar no grupo gratuitamente →
+    </a>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════ -->
+  <footer class="footer">
+    <p>Este site contém links de afiliados. Ao comprar através dos nossos links, podemos ganhar uma comissão sem custo adicional para você.</p>
+    <p style="margin-top:6px">© 2026 Grupo VIP de Ofertas &nbsp;·&nbsp; <a href="#">Política de Privacidade</a></p>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════
+       FLOATING CTA (aparece ao rolar)
+  ═══════════════════════════════════════════ -->
+  <div class="float-cta" id="float-cta">
+    <a href="#" class="btn-cta" id="cta-float" onclick="entrarGrupo(event)">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="width:20px;height:20px">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+      ENTRAR NO GRUPO
+    </a>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       JAVASCRIPT
+  ═══════════════════════════════════════════ -->
+  <script>
+    /* ── Configuração ──────────────────────────
+       Atualize estas variáveis quando tiver os dados reais
+    ────────────────────────────────────────── */
+    var CONFIG = {
+      whatsappGroupUrl: 'https://chat.whatsapp.com/LINK_DO_SEU_GRUPO', // <-- SUBSTITUIR
+      spotsTotal:  1000,
+      spotsTaken:  830,
+      pixelId:     'YOUR_PIXEL_ID',   // <-- SUBSTITUIR
+      ga4Id:       'G-XXXXXXXXXX',    // <-- SUBSTITUIR
+    };
+
+    /* ── Captura de UTMs ───────────────────────
+       Lê parâmetros da URL e salva em sessionStorage
+    ────────────────────────────────────────── */
+    (function captureUTMs() {
+      var params = new URLSearchParams(window.location.search);
+      var utmKeys = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'];
+      utmKeys.forEach(function(key) {
+        var val = params.get(key);
+        if (val) sessionStorage.setItem(key, val);
+      });
+      // Também salva fbclid para rastreamento do Meta Ads
+      var fbclid = params.get('fbclid');
+      if (fbclid) sessionStorage.setItem('fbclid', fbclid);
+    })();
+
+    /* ── Floating CTA ao rolar ──────────────── */
+    var floatCta = document.getElementById('float-cta');
+    var heroSection = document.querySelector('.hero');
+    window.addEventListener('scroll', function() {
+      var heroBottom = heroSection.getBoundingClientRect().bottom;
+      if (heroBottom < 0) {
+        floatCta.classList.add('visible');
+      } else {
+        floatCta.classList.remove('visible');
+      }
+    }, { passive: true });
+
+    /* ── Função principal: entrar no grupo ─────
+       Dispara eventos de conversão + redireciona
+    ────────────────────────────────────────── */
+    function entrarGrupo(event) {
+      event.preventDefault();
+      var source = (event.currentTarget && event.currentTarget.id) || 'unknown';
+
+      // Meta Pixel — Lead event
+      if (typeof fbq === 'function') {
+        fbq('track', 'Lead', { content_name: 'whatsapp_group_join', button: source });
+      }
+
+      // Google Analytics 4 — via dataLayer (GTM)
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: 'generate_lead',
+          button_id: source,
+          utm_source:   sessionStorage.getItem('utm_source')   || '(direct)',
+          utm_medium:   sessionStorage.getItem('utm_medium')   || '(none)',
+          utm_campaign: sessionStorage.getItem('utm_campaign') || '(none)',
+        });
+      }
+
+      // Pequeno delay para garantir que os pixels disparam
+      setTimeout(function() {
+        window.location.href = CONFIG.whatsappGroupUrl;
+      }, 250);
+    }
+
+    /* ── Contador animado de membros ─────────── */
+    function animateCounter(el, target) {
+      var start = Math.max(0, target - 200);
+      var duration = 1200;
+      var startTime = null;
+      function step(ts) {
+        if (!startTime) startTime = ts;
+        var progress = Math.min((ts - startTime) / duration, 1);
+        var eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        var current = Math.round(start + (target - start) * eased);
+        el.textContent = current.toLocaleString('pt-BR');
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    // Anima o contador quando entra no viewport
+    var counterEl = document.getElementById('counter-members');
+    var counterTarget = 4872;
+    var counterObserver = new IntersectionObserver(function(entries) {
+      if (entries[0].isIntersecting) {
+        animateCounter(counterEl, counterTarget);
+        counterObserver.disconnect();
+      }
+    }, { threshold: 0.5 });
+    counterObserver.observe(counterEl);
+
+    /* ── Coleta info do dispositivo (para backend) ─ */
+    window.addEventListener('load', function() {
+      var info = {
+        device:    /Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+        referrer:  document.referrer || '(direct)',
+        timestamp: new Date().toISOString(),
+        utm_source:   sessionStorage.getItem('utm_source'),
+        utm_medium:   sessionStorage.getItem('utm_medium'),
+        utm_campaign: sessionStorage.getItem('utm_campaign'),
+        utm_content:  sessionStorage.getItem('utm_content'),
+      };
+      // TODO: quando tiver backend Flask, enviar via fetch('/api/pageview', { method:'POST', body: JSON.stringify(info) })
+      console.info('[analytics] pageview', info);
+    });
+  </script>
+
+</body>
+</html>

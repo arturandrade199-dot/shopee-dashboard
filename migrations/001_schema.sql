@@ -244,7 +244,10 @@ SELECT
   p.sold_num                                         AS vendas_validador,
   p.sold_raw                                         AS vendas_validador_raw,
   p.commission_rate                                  AS comissao_produto_validador_pct,
-  pc_video.estimated                                 AS comissao_video_estimada,
+  COALESCE(
+    pc_video.estimated,
+    ROUND(COALESCE(p.price_coupon, p.original_price) * p.commission_rate / 100.0, 2)
+  )                                                  AS comissao_video_estimada,
 
   -- ── Prova de mercado (maior concorrente recomendado) ─────
   COALESCE(m.maior_venda_mercado, p.sold_num)        AS maior_venda_mercado,

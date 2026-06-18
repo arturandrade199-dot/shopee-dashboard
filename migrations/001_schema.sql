@@ -243,8 +243,7 @@ SELECT
   p.title                                            AS produto_validador,
   p.sold_num                                         AS vendas_validador,
   p.sold_raw                                         AS vendas_validador_raw,
-  COALESCE(p.commission_rate, 0) +
-  COALESCE(p.commission_extra_pct, 0)                AS comissao_produto_validador_pct,
+  p.commission_rate                                  AS comissao_produto_validador_pct,
   pc_video.estimated                                 AS comissao_video_estimada,
 
   -- ── Prova de mercado (maior concorrente recomendado) ─────

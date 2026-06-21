@@ -127,9 +127,20 @@ def _short_url(url: str) -> str:
     return url.split("?")[0] if url else ""
 
 
+# Emojis via escape Unicode — evita corrupcao de encoding no Windows
+_IC = "\U0001F6D2"   # 🛒  cabecalho
+_IM = "\U0001F4B0"   # 💰  preco
+_IW = "\U0001F4B8"   # 💸  comissao
+_IL = "\U0001F517"   # 🔗  link
+_IF = "\U0001F525"   # 🔥  desconto
+_IS = "⭐"       # ⭐  rating
+_IP = "\U0001F4E6"   # 📦  vendas
+_IH = "\U0001F3EA"   # 🏪  loja
+
+
 def build_wa_multi_oportunidades(rows: pd.DataFrame) -> str:
     n = len(rows)
-    lines = [f"🛍️ *OPORTUNIDADES SELECIONADAS ({n})*", ""]
+    lines = [f"{_IC} *OPORTUNIDADES SELECIONADAS ({n})*", ""]
     for i, (_, r) in enumerate(rows.iterrows(), 1):
         title    = str(r.get("produto_alvo", ""))[:65]
         price    = float(r.get("preco_alvo", 0) or 0)
@@ -138,9 +149,9 @@ def build_wa_multi_oportunidades(rows: pd.DataFrame) -> str:
         url      = _short_url(str(r.get("url_alvo", "") or ""))
         lines.append(f"*{i}.* {title}")
         if price:
-            lines.append(f"💰 {_br(price)} | 💸 {comm_pct}% (~{_br(comm_val)})")
+            lines.append(f"{_IM} {_br(price)} | {_IW} {comm_pct}% (~{_br(comm_val)})")
         if url:
-            lines.append(f"🔗 {url}")
+            lines.append(f"{_IL} {url}")
         if i < n:
             lines.append("─────────────────")
     return _wa_link("\n".join(lines))
@@ -148,7 +159,7 @@ def build_wa_multi_oportunidades(rows: pd.DataFrame) -> str:
 
 def build_wa_multi_produtos(rows: pd.DataFrame) -> str:
     n = len(rows)
-    lines = [f"🛍️ *PRODUTOS SELECIONADOS ({n})*", ""]
+    lines = [f"{_IC} *PRODUTOS SELECIONADOS ({n})*", ""]
     for i, (_, r) in enumerate(rows.iterrows(), 1):
         title    = str(r.get("title", ""))[:65]
         price    = float(r.get("price", 0) or 0)
@@ -157,13 +168,13 @@ def build_wa_multi_produtos(rows: pd.DataFrame) -> str:
         url      = _short_url(str(r.get("affiliate_url", "") or ""))
         lines.append(f"*{i}.* {title}")
         if orig and orig > price:
-            lines.append(f"🔥 DE {_br(orig)} | POR {_br(price)}")
+            lines.append(f"{_IF} DE {_br(orig)} | POR {_br(price)}")
         elif price:
-            lines.append(f"💰 {_br(price)}")
+            lines.append(f"{_IM} {_br(price)}")
         if comm_pct:
-            lines.append(f"💸 Comissão: {comm_pct}%")
+            lines.append(f"{_IW} Comissao: {comm_pct}%")
         if url:
-            lines.append(f"🔗 {url}")
+            lines.append(f"{_IL} {url}")
         if i < n:
             lines.append("─────────────────")
     return _wa_link("\n".join(lines))
@@ -179,17 +190,17 @@ def make_whatsapp_url_oportunidade(row: dict) -> str:
     loja     = str(row.get("loja", "") or "")
     url      = _short_url(str(row.get("url_alvo", "") or ""))
 
-    lines = [f"🛍️ *{title}*", ""]
+    lines = [f"{_IC} *{title}*", ""]
     if loja:
-        lines.append(f"🏪 Loja: {loja}")
+        lines.append(f"{_IH} Loja: {loja}")
     if price:
-        lines.append(f"💰 {_br(price)}")
+        lines.append(f"{_IM} {_br(price)}")
     if rating:
-        lines.append(f"⭐ {rating:.1f} | 📦 {vendas:,} vendas")
+        lines.append(f"{_IS} {rating:.1f} | {_IP} {vendas:,} vendas")
     if comm_pct:
-        lines.append(f"💸 Comissão: {comm_pct}% (~{_br(comm_val)})")
+        lines.append(f"{_IW} Comissao: {comm_pct}% (~{_br(comm_val)})")
     if url:
-        lines += ["", f"🔗 {url}"]
+        lines += ["", f"{_IL} {url}"]
 
     return _wa_link("\n".join(lines))
 
@@ -201,15 +212,15 @@ def make_whatsapp_url(row: dict) -> str:
     comm  = int(row.get("total_commission_pct", 0) or 0)
     url   = _short_url(str(row.get("affiliate_url", "") or row.get("product_url", "") or ""))
 
-    lines = [f"🛍️ *{title}*", ""]
+    lines = [f"{_IC} *{title}*", ""]
     if orig and orig > price:
-        lines.append(f"🔥 DE {_br(orig)} | POR {_br(price)}")
+        lines.append(f"{_IF} DE {_br(orig)} | POR {_br(price)}")
     elif price:
-        lines.append(f"💰 {_br(price)}")
+        lines.append(f"{_IM} {_br(price)}")
     if comm:
-        lines.append(f"💸 Comissão: {comm}%")
+        lines.append(f"{_IW} Comissao: {comm}%")
     if url:
-        lines += ["", f"🔗 {url}"]
+        lines += ["", f"{_IL} {url}"]
 
     return _wa_link("\n".join(lines))
 

@@ -181,9 +181,8 @@ def _fmt_num(n: int) -> str:
 
 
 def build_wa_text_oportunidades(rows: pd.DataFrame) -> str:
-    """Retorna texto bruto com emojis — encoding feito por JS no browser."""
     n = len(rows)
-    lines = [f"{_IC} *OPORTUNIDADES SELECIONADAS ({n})*", ""]
+    lines = [f"*OPORTUNIDADES SELECIONADAS ({n})*", ""]
     for i, (_, r) in enumerate(rows.iterrows(), 1):
         title    = str(r.get("produto_alvo", ""))[:65]
         price    = float(r.get("preco_alvo", 0) or 0)
@@ -193,20 +192,19 @@ def build_wa_text_oportunidades(rows: pd.DataFrame) -> str:
         url      = _short_url(str(r.get("url_alvo", "") or ""))
         lines.append(f"*{i}.* {title}")
         if price:
-            lines.append(f"{_IM} {_br(price)} | {_IW} {comm_pct}% (~{_br(comm_val)})")
+            lines.append(f"Preco: {_br(price)} | Comissao: {comm_pct}% (~{_br(comm_val)})")
         if mercado:
-            lines.append(f"{_IP} Mercado: {_fmt_num(mercado)} vendas")
+            lines.append(f"Mercado: {_fmt_num(mercado)} vendas")
         if url:
-            lines.append(f"{_IL} {url}")
+            lines.append(url)
         if i < n:
-            lines.append("─────────────────")
+            lines.append("---")
     return "\n".join(lines)
 
 
 def build_wa_text_produtos(rows: pd.DataFrame) -> str:
-    """Retorna texto bruto com emojis — encoding feito por JS no browser."""
     n = len(rows)
-    lines = [f"{_IC} *PRODUTOS SELECIONADOS ({n})*", ""]
+    lines = [f"*PRODUTOS SELECIONADOS ({n})*", ""]
     for i, (_, r) in enumerate(rows.iterrows(), 1):
         title    = str(r.get("title", ""))[:65]
         price    = float(r.get("price", 0) or 0)
@@ -216,17 +214,17 @@ def build_wa_text_produtos(rows: pd.DataFrame) -> str:
         sold     = int(r.get("sold_num", 0) or 0)
         lines.append(f"*{i}.* {title}")
         if orig and orig > price:
-            lines.append(f"{_IF} DE {_br(orig)} | POR {_br(price)}")
+            lines.append(f"DE {_br(orig)} | POR {_br(price)}")
         elif price:
-            lines.append(f"{_IM} {_br(price)}")
+            lines.append(f"Preco: {_br(price)}")
         if comm_pct:
-            lines.append(f"{_IW} Comissao: {comm_pct}%")
+            lines.append(f"Comissao: {comm_pct}%")
         if sold:
-            lines.append(f"{_IP} {_fmt_num(sold)} vendas")
+            lines.append(f"Vendas: {_fmt_num(sold)}")
         if url:
-            lines.append(f"{_IL} {url}")
+            lines.append(url)
         if i < n:
-            lines.append("─────────────────")
+            lines.append("---")
     return "\n".join(lines)
 
 

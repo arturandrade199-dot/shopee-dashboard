@@ -318,6 +318,7 @@ with tab1:
             "maior_venda_mercado":            "Maior no Mercado",
             "concorrentes_na_categoria":      "Concorrentes",
             "produto_validador":              "Validador (sua loja)",
+            "url_validador":                  "🔗 Link Validador",
             "loja":                           "Loja",
             "avaliacoes_loja":                "Avaliações Loja",
         }
@@ -327,8 +328,9 @@ with tab1:
         st.dataframe(
             table,
             column_config={
-                "🔗 Link":          st.column_config.LinkColumn("🔗 Link", display_text="Abrir →"),
-                "📲 WhatsApp":      st.column_config.LinkColumn("📲 WhatsApp", display_text="Enviar"),
+                "🔗 Link":              st.column_config.LinkColumn("🔗 Link", display_text="Abrir →"),
+                "📲 WhatsApp":          st.column_config.LinkColumn("📲 WhatsApp", display_text="Enviar"),
+                "🔗 Link Validador":    st.column_config.LinkColumn("🔗 Link Validador", display_text="Abrir →"),
                 "Ratio ×":          st.column_config.NumberColumn(format="%dx"),
                 "Preço (R$)":       st.column_config.NumberColumn(format="R$ %.2f"),
                 "Comissão %":       st.column_config.NumberColumn(format="%d%%"),

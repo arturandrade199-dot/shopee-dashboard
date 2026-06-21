@@ -112,6 +112,44 @@ def load_extraidos(batch: str) -> pd.DataFrame:
     return pd.DataFrame(res.data or [])
 
 
+def build_wa_multi_oportunidades(rows: pd.DataFrame) -> str:
+    lines = ["🛍️ *OPORTUNIDADES SELECIONADAS*", ""]
+    for i, (_, r) in enumerate(rows.iterrows(), 1):
+        title    = str(r.get("produto_alvo", ""))
+        price    = float(r.get("preco_alvo", 0) or 0)
+        comm_pct = int(r.get("comissao_produto_validador_pct", 0) or 0)
+        comm_val = float(r.get("comissao_video_estimada", 0) or 0)
+        url      = str(r.get("url_alvo", "") or "")
+        lines.append(f"*{i}.* {title}")
+        if price:
+            lines.append(f"💰 R$ {price:.2f} | 💸 {comm_pct}% (~R$ {comm_val:.2f})")
+        if url:
+            lines.append(f"🔗 {url}")
+        lines.append("")
+    return "https://wa.me/?text=" + urllib.parse.quote("\n".join(lines))
+
+
+def build_wa_multi_produtos(rows: pd.DataFrame) -> str:
+    lines = ["🛍️ *PRODUTOS SELECIONADOS*", ""]
+    for i, (_, r) in enumerate(rows.iterrows(), 1):
+        title    = str(r.get("title", ""))
+        price    = float(r.get("price", 0) or 0)
+        orig     = float(r.get("original_price", 0) or 0)
+        comm_pct = int(r.get("total_commission_pct", 0) or 0)
+        url      = str(r.get("affiliate_url", "") or "")
+        lines.append(f"*{i}.* {title}")
+        if orig and orig > price:
+            lines.append(f"🔥 DE R$ {orig:.2f} | POR R$ {price:.2f}")
+        elif price:
+            lines.append(f"💰 R$ {price:.2f}")
+        if comm_pct:
+            lines.append(f"💸 Comissão: {comm_pct}%")
+        if url:
+            lines.append(f"🔗 {url}")
+        lines.append("")
+    return "https://wa.me/?text=" + urllib.parse.quote("\n".join(lines))
+
+
 def make_whatsapp_url_oportunidade(row: dict) -> str:
     title    = str(row.get("produto_alvo", ""))
     price    = float(row.get("preco_alvo", 0) or 0)
@@ -325,7 +363,7 @@ with tab1:
         avail = [c for c in col_map if c in df.columns]
         table = df[avail].rename(columns=col_map)
 
-        st.dataframe(
+        ev1 = st.dataframe(
             table,
             column_config={
                 "🔗 Link":              st.column_config.LinkColumn("🔗 Link", display_text="Abrir →"),
@@ -343,11 +381,25 @@ with tab1:
             use_container_width=True,
             hide_index=True,
             height=420,
+            on_select="rerun",
+            selection_mode="multi-row",
         )
 
-        csv = table.drop(columns=["📲 WhatsApp"], errors="ignore").to_csv(index=False).encode("utf-8")
-        st.download_button("⬇️ Exportar CSV", csv,
-                           f"oportunidades_{batch_sel}.csv", "text/csv")
+        sel1 = ev1.selection.rows
+        c_wa1, c_csv1 = st.columns([2, 1])
+        with c_wa1:
+            if sel1:
+                wa_url = build_wa_multi_oportunidades(df.iloc[sel1])
+                st.link_button(
+                    f"📲 Enviar {len(sel1)} produto(s) para WhatsApp",
+                    wa_url, use_container_width=True,
+                )
+            else:
+                st.caption("Selecione linhas na tabela para enviar vários de uma vez.")
+        with c_csv1:
+            csv = table.drop(columns=["📲 WhatsApp"], errors="ignore").to_csv(index=False).encode("utf-8")
+            st.download_button("⬇️ Exportar CSV", csv,
+                               f"oportunidades_{batch_sel}.csv", "text/csv")
 
 
 # ════════════════════════════════════════════════════════════════════
@@ -427,7 +479,7 @@ with tab2:
         avail2  = [c for c in col_map2 if c in df2.columns]
         table2  = df2[avail2].rename(columns=col_map2)
 
-        st.dataframe(
+        ev2 = st.dataframe(
             table2,
             column_config={
                 "🔗 Link":       st.column_config.LinkColumn("🔗 Link", display_text="Abrir →"),
@@ -442,11 +494,25 @@ with tab2:
             use_container_width=True,
             hide_index=True,
             height=460,
+            on_select="rerun",
+            selection_mode="multi-row",
         )
 
-        csv2 = table2.drop(columns=["📲 WhatsApp"], errors="ignore").to_csv(index=False).encode("utf-8")
-        st.download_button("⬇️ Exportar CSV", csv2,
-                           f"top_produtos_{batch_sel}.csv", "text/csv")
+        sel2 = ev2.selection.rows
+        c_wa2, c_csv2 = st.columns([2, 1])
+        with c_wa2:
+            if sel2:
+                wa_url2 = build_wa_multi_produtos(df2.iloc[sel2])
+                st.link_button(
+                    f"📲 Enviar {len(sel2)} produto(s) para WhatsApp",
+                    wa_url2, use_container_width=True,
+                )
+            else:
+                st.caption("Selecione linhas na tabela para enviar vários de uma vez.")
+        with c_csv2:
+            csv2 = table2.drop(columns=["📲 WhatsApp"], errors="ignore").to_csv(index=False).encode("utf-8")
+            st.download_button("⬇️ Exportar CSV", csv2,
+                               f"top_produtos_{batch_sel}.csv", "text/csv")
 
 
 # ════════════════════════════════════════════════════════════════════
@@ -502,7 +568,7 @@ with tab3:
         if "Extraído em" in table3.columns:
             table3["Extraído em"] = pd.to_datetime(table3["Extraído em"]).dt.strftime("%d/%m/%Y %H:%M")
 
-        st.dataframe(
+        ev3 = st.dataframe(
             table3,
             column_config={
                 "🔗 Link":       st.column_config.LinkColumn("🔗 Link", display_text="Abrir →"),
@@ -517,8 +583,22 @@ with tab3:
             use_container_width=True,
             hide_index=True,
             height=460,
+            on_select="rerun",
+            selection_mode="multi-row",
         )
 
-        csv3 = table3.drop(columns=["📲 WhatsApp"], errors="ignore").to_csv(index=False).encode("utf-8")
-        st.download_button("⬇️ Exportar CSV", csv3,
-                           f"extraidos_{batch_sel}.csv", "text/csv")
+        sel3 = ev3.selection.rows
+        c_wa3, c_csv3 = st.columns([2, 1])
+        with c_wa3:
+            if sel3:
+                wa_url3 = build_wa_multi_produtos(df3.iloc[sel3])
+                st.link_button(
+                    f"📲 Enviar {len(sel3)} produto(s) para WhatsApp",
+                    wa_url3, use_container_width=True,
+                )
+            else:
+                st.caption("Selecione linhas na tabela para enviar vários de uma vez.")
+        with c_csv3:
+            csv3 = table3.drop(columns=["📲 WhatsApp"], errors="ignore").to_csv(index=False).encode("utf-8")
+            st.download_button("⬇️ Exportar CSV", csv3,
+                               f"extraidos_{batch_sel}.csv", "text/csv")

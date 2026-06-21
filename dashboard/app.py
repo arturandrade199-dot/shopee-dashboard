@@ -112,41 +112,57 @@ def load_extraidos(batch: str) -> pd.DataFrame:
     return pd.DataFrame(res.data or [])
 
 
+def _br(v: float) -> str:
+    """Formata float como moeda brasileira: 1.234,56"""
+    return f"R$ {v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+
+def _short_url(url: str) -> str:
+    """Encurta URL Shopee para shopee.com.br/i.SHOP.ITEM (remove título e extraParams)."""
+    import re
+    m = re.search(r"(i\.\d+\.\d+)", url or "")
+    return f"https://shopee.com.br/{m.group(1)}" if m else (url or "")
+
+
 def build_wa_multi_oportunidades(rows: pd.DataFrame) -> str:
-    lines = ["🛍️ *OPORTUNIDADES SELECIONADAS*", ""]
+    n = len(rows)
+    lines = [f"🛍️ *OPORTUNIDADES SELECIONADAS ({n})*", ""]
     for i, (_, r) in enumerate(rows.iterrows(), 1):
-        title    = str(r.get("produto_alvo", ""))
+        title    = str(r.get("produto_alvo", ""))[:65]
         price    = float(r.get("preco_alvo", 0) or 0)
         comm_pct = int(r.get("comissao_produto_validador_pct", 0) or 0)
         comm_val = float(r.get("comissao_video_estimada", 0) or 0)
-        url      = str(r.get("url_alvo", "") or "")
+        url      = _short_url(str(r.get("url_alvo", "") or ""))
         lines.append(f"*{i}.* {title}")
         if price:
-            lines.append(f"💰 R$ {price:.2f} | 💸 {comm_pct}% (~R$ {comm_val:.2f})")
+            lines.append(f"💰 {_br(price)} | 💸 {comm_pct}% (~{_br(comm_val)})")
         if url:
             lines.append(f"🔗 {url}")
-        lines.append("")
+        if i < n:
+            lines.append("─────────────────")
     return "https://wa.me/?text=" + urllib.parse.quote("\n".join(lines))
 
 
 def build_wa_multi_produtos(rows: pd.DataFrame) -> str:
-    lines = ["🛍️ *PRODUTOS SELECIONADOS*", ""]
+    n = len(rows)
+    lines = [f"🛍️ *PRODUTOS SELECIONADOS ({n})*", ""]
     for i, (_, r) in enumerate(rows.iterrows(), 1):
-        title    = str(r.get("title", ""))
+        title    = str(r.get("title", ""))[:65]
         price    = float(r.get("price", 0) or 0)
         orig     = float(r.get("original_price", 0) or 0)
         comm_pct = int(r.get("total_commission_pct", 0) or 0)
-        url      = str(r.get("affiliate_url", "") or "")
+        url      = _short_url(str(r.get("affiliate_url", "") or ""))
         lines.append(f"*{i}.* {title}")
         if orig and orig > price:
-            lines.append(f"🔥 DE R$ {orig:.2f} | POR R$ {price:.2f}")
+            lines.append(f"🔥 DE {_br(orig)} | POR {_br(price)}")
         elif price:
-            lines.append(f"💰 R$ {price:.2f}")
+            lines.append(f"💰 {_br(price)}")
         if comm_pct:
             lines.append(f"💸 Comissão: {comm_pct}%")
         if url:
             lines.append(f"🔗 {url}")
-        lines.append("")
+        if i < n:
+            lines.append("─────────────────")
     return "https://wa.me/?text=" + urllib.parse.quote("\n".join(lines))
 
 
@@ -158,17 +174,17 @@ def make_whatsapp_url_oportunidade(row: dict) -> str:
     comm_pct = int(row.get("comissao_produto_validador_pct", 0) or 0)
     comm_val = float(row.get("comissao_video_estimada", 0) or 0)
     loja     = str(row.get("loja", "") or "")
-    url      = str(row.get("url_alvo", "") or "")
+    url      = _short_url(str(row.get("url_alvo", "") or ""))
 
     lines = [f"🛍️ *{title}*", ""]
     if loja:
         lines.append(f"🏪 Loja: {loja}")
     if price:
-        lines.append(f"💰 R$ {price:.2f}")
+        lines.append(f"💰 {_br(price)}")
     if rating:
         lines.append(f"⭐ {rating:.1f} | 📦 {vendas:,} vendas")
     if comm_pct:
-        lines.append(f"💸 Comissão: {comm_pct}% (~R$ {comm_val:.2f})")
+        lines.append(f"💸 Comissão: {comm_pct}% (~{_br(comm_val)})")
     if url:
         lines += ["", f"🔗 {url}"]
 
@@ -180,13 +196,13 @@ def make_whatsapp_url(row: dict) -> str:
     price = float(row.get("price", 0) or 0)
     orig  = float(row.get("original_price", 0) or 0)
     comm  = int(row.get("total_commission_pct", 0) or 0)
-    url   = str(row.get("affiliate_url", "") or row.get("product_url", "") or "")
+    url   = _short_url(str(row.get("affiliate_url", "") or row.get("product_url", "") or ""))
 
     lines = [f"🛍️ *{title}*", ""]
     if orig and orig > price:
-        lines.append(f"🔥 DE R$ {orig:.2f} | POR R$ {price:.2f}")
+        lines.append(f"🔥 DE {_br(orig)} | POR {_br(price)}")
     elif price:
-        lines.append(f"💰 R$ {price:.2f}")
+        lines.append(f"💰 {_br(price)}")
     if comm:
         lines.append(f"💸 Comissão: {comm}%")
     if url:

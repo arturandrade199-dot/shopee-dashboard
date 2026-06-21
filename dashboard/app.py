@@ -118,10 +118,8 @@ def _br(v: float) -> str:
 
 
 def _short_url(url: str) -> str:
-    """Encurta URL Shopee para shopee.com.br/i.SHOP.ITEM (remove título e extraParams)."""
-    import re
-    m = re.search(r"(i\.\d+\.\d+)", url or "")
-    return f"https://shopee.com.br/{m.group(1)}" if m else (url or "")
+    """Remove query string da URL Shopee (mantém o caminho, elimina extraParams)."""
+    return url.split("?")[0] if url else ""
 
 
 def build_wa_multi_oportunidades(rows: pd.DataFrame) -> str:

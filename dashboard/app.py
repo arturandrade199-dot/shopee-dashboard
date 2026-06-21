@@ -112,6 +112,31 @@ def load_extraidos(batch: str) -> pd.DataFrame:
     return pd.DataFrame(res.data or [])
 
 
+def make_whatsapp_url_oportunidade(row: dict) -> str:
+    title    = str(row.get("produto_alvo", ""))
+    price    = float(row.get("preco_alvo", 0) or 0)
+    rating   = float(row.get("rating_alvo", 0) or 0)
+    vendas   = int(row.get("vendas_alvo", 0) or 0)
+    comm_pct = int(row.get("comissao_produto_validador_pct", 0) or 0)
+    comm_val = float(row.get("comissao_video_estimada", 0) or 0)
+    loja     = str(row.get("loja", "") or "")
+    url      = str(row.get("url_alvo", "") or "")
+
+    lines = [f"🛍️ *{title}*", ""]
+    if loja:
+        lines.append(f"🏪 Loja: {loja}")
+    if price:
+        lines.append(f"💰 R$ {price:.2f}")
+    if rating:
+        lines.append(f"⭐ {rating:.1f} | 📦 {vendas:,} vendas")
+    if comm_pct:
+        lines.append(f"💸 Comissão: {comm_pct}% (~R$ {comm_val:.2f})")
+    if url:
+        lines += ["", f"🔗 {url}"]
+
+    return "https://wa.me/?text=" + urllib.parse.quote("\n".join(lines))
+
+
 def make_whatsapp_url(row: dict) -> str:
     title = str(row.get("title", ""))
     price = float(row.get("price", 0) or 0)
@@ -278,16 +303,23 @@ with tab1:
         # ── Tabela ────────────────────────────────────────────────
         st.subheader(f"{len(df)} oportunidades")
 
+        df["whatsapp_url"] = df.apply(make_whatsapp_url_oportunidade, axis=1)
+
         col_map = {
-            "produto_alvo":          "Produto Alvo",
-            "vendas_alvo":           "Vendas",
-            "rating_alvo":           "Rating",
-            "preco_alvo":            "Preço (R$)",
-            "ratio_mercado_vs_alvo": "Ratio ×",
-            "maior_venda_mercado":   "Maior no Mercado",
-            "produto_validador":     "Validador (sua loja)",
-            "loja":                  "Loja",
-            "url_alvo":              "Link Produto",
+            "produto_alvo":                   "Produto Alvo",
+            "url_alvo":                       "🔗 Link",
+            "whatsapp_url":                   "📲 WhatsApp",
+            "vendas_alvo":                    "Vendas",
+            "rating_alvo":                    "Rating",
+            "preco_alvo":                     "Preço (R$)",
+            "comissao_produto_validador_pct": "Comissão %",
+            "comissao_video_estimada":        "Comissão R$",
+            "ratio_mercado_vs_alvo":          "Ratio ×",
+            "maior_venda_mercado":            "Maior no Mercado",
+            "concorrentes_na_categoria":      "Concorrentes",
+            "produto_validador":              "Validador (sua loja)",
+            "loja":                           "Loja",
+            "avaliacoes_loja":                "Avaliações Loja",
         }
         avail = [c for c in col_map if c in df.columns]
         table = df[avail].rename(columns=col_map)
@@ -295,11 +327,15 @@ with tab1:
         st.dataframe(
             table,
             column_config={
-                "Link Produto":     st.column_config.LinkColumn("Link", display_text="Abrir →"),
+                "🔗 Link":          st.column_config.LinkColumn("🔗 Link", display_text="Abrir →"),
+                "📲 WhatsApp":      st.column_config.LinkColumn("📲 WhatsApp", display_text="Enviar"),
                 "Ratio ×":          st.column_config.NumberColumn(format="%dx"),
                 "Preço (R$)":       st.column_config.NumberColumn(format="R$ %.2f"),
+                "Comissão %":       st.column_config.NumberColumn(format="%d%%"),
+                "Comissão R$":      st.column_config.NumberColumn(format="R$ %.2f"),
                 "Vendas":           st.column_config.NumberColumn(format="%d"),
                 "Maior no Mercado": st.column_config.NumberColumn(format="%d"),
+                "Concorrentes":     st.column_config.NumberColumn(format="%d"),
                 "Rating":           st.column_config.NumberColumn(format="%.1f ⭐"),
             },
             use_container_width=True,
@@ -307,7 +343,7 @@ with tab1:
             height=420,
         )
 
-        csv = table.to_csv(index=False).encode("utf-8")
+        csv = table.drop(columns=["📲 WhatsApp"], errors="ignore").to_csv(index=False).encode("utf-8")
         st.download_button("⬇️ Exportar CSV", csv,
                            f"oportunidades_{batch_sel}.csv", "text/csv")
 

@@ -4,12 +4,14 @@ Execução local:  streamlit run app.py
 Deploy:          Streamlit Community Cloud → main file: app.py
 """
 
+import json
 import os
 import urllib.parse
 
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+import streamlit.components.v1 as components
 
 # ── Configuração ──────────────────────────────────────────────────────
 st.set_page_config(
@@ -113,28 +115,27 @@ def load_extraidos(batch: str) -> pd.DataFrame:
 
 
 def _wa_link(text: str) -> str:
+    """URL wa.me para células de dataframe (per-row LinkColumn)."""
+    return "https://wa.me/?text=" + urllib.parse.quote(text, safe="", encoding="utf-8")
+
+
+def wa_button(label: str, raw_text: str) -> None:
     """
-    Gera URL wa.me mantendo emojis como caracteres raw.
-    Streamlit/React re-codifica '%' como '%25' (double-encoding), então
-    NÃO pré-codificamos emojis — deixamos o browser fazer a codificação UTF-8
-    ao seguir o href. Apenas chars ASCII especiais são percent-encoded.
+    Botão WhatsApp usando JavaScript encodeURIComponent.
+    É a única forma confiável de preservar emojis — st.link_button corrompe
+    os emojis ao serializar a URL via WebSocket/JSON do Streamlit.
     """
-    safe_ascii = (
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "abcdefghijklmnopqrstuvwxyz"
-        "0123456789-_.~*"
+    js_text = json.dumps(raw_text)          # escapa corretamente para literal JS
+    components.html(
+        f"""<button
+            onclick="window.open('https://wa.me/?text='+encodeURIComponent({js_text}),'_blank')"
+            style="background:#25D366;color:#fff;border:none;padding:9px 18px;
+                   border-radius:5px;cursor:pointer;font-size:14px;
+                   width:100%;font-family:sans-serif;font-weight:600">
+            {label}
+        </button>""",
+        height=50,
     )
-    parts = []
-    for ch in text:
-        if ord(ch) > 127:
-            parts.append(ch)           # emoji / acentuado: raw
-        elif ch == "\n":
-            parts.append("%0A")
-        elif ch in safe_ascii:
-            parts.append(ch)
-        else:
-            parts.append(urllib.parse.quote(ch, safe=""))
-    return "https://wa.me/?text=" + "".join(parts)
 
 
 def _br(v: float) -> str:
@@ -158,7 +159,13 @@ _IP = "\U0001F4E6"   # 📦  vendas
 _IH = "\U0001F3EA"   # 🏪  loja
 
 
-def build_wa_multi_oportunidades(rows: pd.DataFrame) -> str:
+def _fmt_num(n: int) -> str:
+    """Formata inteiro com separador de milhar brasileiro (ponto)."""
+    return f"{n:,}".replace(",", ".")
+
+
+def build_wa_text_oportunidades(rows: pd.DataFrame) -> str:
+    """Retorna texto bruto com emojis — encoding feito por JS no browser."""
     n = len(rows)
     lines = [f"{_IC} *OPORTUNIDADES SELECIONADAS ({n})*", ""]
     for i, (_, r) in enumerate(rows.iterrows(), 1):
@@ -172,15 +179,16 @@ def build_wa_multi_oportunidades(rows: pd.DataFrame) -> str:
         if price:
             lines.append(f"{_IM} {_br(price)} | {_IW} {comm_pct}% (~{_br(comm_val)})")
         if mercado:
-            lines.append(f"{_IP} Mercado: {mercado:,} vendas")
+            lines.append(f"{_IP} Mercado: {_fmt_num(mercado)} vendas")
         if url:
             lines.append(f"{_IL} {url}")
         if i < n:
             lines.append("─────────────────")
-    return _wa_link("\n".join(lines))
+    return "\n".join(lines)
 
 
-def build_wa_multi_produtos(rows: pd.DataFrame) -> str:
+def build_wa_text_produtos(rows: pd.DataFrame) -> str:
+    """Retorna texto bruto com emojis — encoding feito por JS no browser."""
     n = len(rows)
     lines = [f"{_IC} *PRODUTOS SELECIONADOS ({n})*", ""]
     for i, (_, r) in enumerate(rows.iterrows(), 1):
@@ -198,12 +206,12 @@ def build_wa_multi_produtos(rows: pd.DataFrame) -> str:
         if comm_pct:
             lines.append(f"{_IW} Comissao: {comm_pct}%")
         if sold:
-            lines.append(f"{_IP} {sold:,} vendas")
+            lines.append(f"{_IP} {_fmt_num(sold)} vendas")
         if url:
             lines.append(f"{_IL} {url}")
         if i < n:
             lines.append("─────────────────")
-    return _wa_link("\n".join(lines))
+    return "\n".join(lines)
 
 
 def make_whatsapp_url_oportunidade(row: dict) -> str:
@@ -222,7 +230,7 @@ def make_whatsapp_url_oportunidade(row: dict) -> str:
     if price:
         lines.append(f"{_IM} {_br(price)}")
     if rating:
-        lines.append(f"{_IS} {rating:.1f} | {_IP} Mercado: {mercado:,} vendas")
+        lines.append(f"{_IS} {rating:.1f} | {_IP} Mercado: {_fmt_num(mercado)} vendas")
     if comm_pct:
         lines.append(f"{_IW} Comissao: {comm_pct}% (~{_br(comm_val)})")
     if url:
@@ -247,7 +255,7 @@ def make_whatsapp_url(row: dict) -> str:
     if comm:
         lines.append(f"{_IW} Comissao: {comm}%")
     if sold:
-        lines.append(f"{_IP} {sold:,} vendas")
+        lines.append(f"{_IP} {_fmt_num(sold)} vendas")
     if url:
         lines += ["", f"{_IL} {url}"]
 
@@ -448,11 +456,8 @@ with tab1:
         c_wa1, c_csv1 = st.columns([2, 1])
         with c_wa1:
             if sel1:
-                wa_url = build_wa_multi_oportunidades(df.iloc[sel1])
-                st.link_button(
-                    f"📲 Enviar {len(sel1)} produto(s) para WhatsApp",
-                    wa_url, use_container_width=True,
-                )
+                wa_text1 = build_wa_text_oportunidades(df.iloc[sel1])
+                wa_button(f"\U0001F4F2 Enviar {len(sel1)} produto(s) para WhatsApp", wa_text1)
             else:
                 st.caption("Selecione linhas na tabela para enviar vários de uma vez.")
         with c_csv1:
@@ -561,11 +566,8 @@ with tab2:
         c_wa2, c_csv2 = st.columns([2, 1])
         with c_wa2:
             if sel2:
-                wa_url2 = build_wa_multi_produtos(df2.iloc[sel2])
-                st.link_button(
-                    f"📲 Enviar {len(sel2)} produto(s) para WhatsApp",
-                    wa_url2, use_container_width=True,
-                )
+                wa_text2 = build_wa_text_produtos(df2.iloc[sel2])
+                wa_button(f"\U0001F4F2 Enviar {len(sel2)} produto(s) para WhatsApp", wa_text2)
             else:
                 st.caption("Selecione linhas na tabela para enviar vários de uma vez.")
         with c_csv2:
@@ -650,11 +652,8 @@ with tab3:
         c_wa3, c_csv3 = st.columns([2, 1])
         with c_wa3:
             if sel3:
-                wa_url3 = build_wa_multi_produtos(df3.iloc[sel3])
-                st.link_button(
-                    f"📲 Enviar {len(sel3)} produto(s) para WhatsApp",
-                    wa_url3, use_container_width=True,
-                )
+                wa_text3 = build_wa_text_produtos(df3.iloc[sel3])
+                wa_button(f"\U0001F4F2 Enviar {len(sel3)} produto(s) para WhatsApp", wa_text3)
             else:
                 st.caption("Selecione linhas na tabela para enviar vários de uma vez.")
         with c_csv3:

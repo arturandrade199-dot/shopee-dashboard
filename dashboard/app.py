@@ -113,8 +113,28 @@ def load_extraidos(batch: str) -> pd.DataFrame:
 
 
 def _wa_link(text: str) -> str:
-    """Gera URL wa.me com texto codificado corretamente (equivalente a encodeURIComponent)."""
-    return "https://wa.me/?text=" + urllib.parse.quote(text, safe="", encoding="utf-8")
+    """
+    Gera URL wa.me mantendo emojis como caracteres raw.
+    Streamlit/React re-codifica '%' como '%25' (double-encoding), então
+    NÃO pré-codificamos emojis — deixamos o browser fazer a codificação UTF-8
+    ao seguir o href. Apenas chars ASCII especiais são percent-encoded.
+    """
+    safe_ascii = (
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz"
+        "0123456789-_.~*"
+    )
+    parts = []
+    for ch in text:
+        if ord(ch) > 127:
+            parts.append(ch)           # emoji / acentuado: raw
+        elif ch == "\n":
+            parts.append("%0A")
+        elif ch in safe_ascii:
+            parts.append(ch)
+        else:
+            parts.append(urllib.parse.quote(ch, safe=""))
+    return "https://wa.me/?text=" + "".join(parts)
 
 
 def _br(v: float) -> str:
@@ -133,7 +153,7 @@ _IM = "\U0001F4B0"   # 💰  preco
 _IW = "\U0001F4B8"   # 💸  comissao
 _IL = "\U0001F517"   # 🔗  link
 _IF = "\U0001F525"   # 🔥  desconto
-_IS = "⭐"       # ⭐  rating
+_IS = "\u2B50"   # star rating
 _IP = "\U0001F4E6"   # 📦  vendas
 _IH = "\U0001F3EA"   # 🏪  loja
 
@@ -146,13 +166,13 @@ def build_wa_multi_oportunidades(rows: pd.DataFrame) -> str:
         price    = float(r.get("preco_alvo", 0) or 0)
         comm_pct = int(r.get("comissao_produto_validador_pct", 0) or 0)
         comm_val = float(r.get("comissao_video_estimada", 0) or 0)
+        mercado  = int(r.get("maior_venda_mercado", 0) or 0)
         url      = _short_url(str(r.get("url_alvo", "") or ""))
-        vendas   = int(r.get("vendas_alvo", 0) or 0)
         lines.append(f"*{i}.* {title}")
         if price:
             lines.append(f"{_IM} {_br(price)} | {_IW} {comm_pct}% (~{_br(comm_val)})")
-        if vendas:
-            lines.append(f"{_IP} {vendas:,} vendas")
+        if mercado:
+            lines.append(f"{_IP} Mercado: {mercado:,} vendas")
         if url:
             lines.append(f"{_IL} {url}")
         if i < n:
@@ -190,7 +210,7 @@ def make_whatsapp_url_oportunidade(row: dict) -> str:
     title    = str(row.get("produto_alvo", ""))
     price    = float(row.get("preco_alvo", 0) or 0)
     rating   = float(row.get("rating_alvo", 0) or 0)
-    vendas   = int(row.get("vendas_alvo", 0) or 0)
+    mercado  = int(row.get("maior_venda_mercado", 0) or 0)
     comm_pct = int(row.get("comissao_produto_validador_pct", 0) or 0)
     comm_val = float(row.get("comissao_video_estimada", 0) or 0)
     loja     = str(row.get("loja", "") or "")
@@ -202,7 +222,7 @@ def make_whatsapp_url_oportunidade(row: dict) -> str:
     if price:
         lines.append(f"{_IM} {_br(price)}")
     if rating:
-        lines.append(f"{_IS} {rating:.1f} | {_IP} {vendas:,} vendas")
+        lines.append(f"{_IS} {rating:.1f} | {_IP} Mercado: {mercado:,} vendas")
     if comm_pct:
         lines.append(f"{_IW} Comissao: {comm_pct}% (~{_br(comm_val)})")
     if url:

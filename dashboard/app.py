@@ -147,9 +147,12 @@ def build_wa_multi_oportunidades(rows: pd.DataFrame) -> str:
         comm_pct = int(r.get("comissao_produto_validador_pct", 0) or 0)
         comm_val = float(r.get("comissao_video_estimada", 0) or 0)
         url      = _short_url(str(r.get("url_alvo", "") or ""))
+        vendas   = int(r.get("vendas_alvo", 0) or 0)
         lines.append(f"*{i}.* {title}")
         if price:
             lines.append(f"{_IM} {_br(price)} | {_IW} {comm_pct}% (~{_br(comm_val)})")
+        if vendas:
+            lines.append(f"{_IP} {vendas:,} vendas")
         if url:
             lines.append(f"{_IL} {url}")
         if i < n:
@@ -166,6 +169,7 @@ def build_wa_multi_produtos(rows: pd.DataFrame) -> str:
         orig     = float(r.get("original_price", 0) or 0)
         comm_pct = int(r.get("total_commission_pct", 0) or 0)
         url      = _short_url(str(r.get("affiliate_url", "") or ""))
+        sold     = int(r.get("sold_num", 0) or 0)
         lines.append(f"*{i}.* {title}")
         if orig and orig > price:
             lines.append(f"{_IF} DE {_br(orig)} | POR {_br(price)}")
@@ -173,6 +177,8 @@ def build_wa_multi_produtos(rows: pd.DataFrame) -> str:
             lines.append(f"{_IM} {_br(price)}")
         if comm_pct:
             lines.append(f"{_IW} Comissao: {comm_pct}%")
+        if sold:
+            lines.append(f"{_IP} {sold:,} vendas")
         if url:
             lines.append(f"{_IL} {url}")
         if i < n:
@@ -210,6 +216,7 @@ def make_whatsapp_url(row: dict) -> str:
     price = float(row.get("price", 0) or 0)
     orig  = float(row.get("original_price", 0) or 0)
     comm  = int(row.get("total_commission_pct", 0) or 0)
+    sold  = int(row.get("sold_num", 0) or 0)
     url   = _short_url(str(row.get("affiliate_url", "") or row.get("product_url", "") or ""))
 
     lines = [f"{_IC} *{title}*", ""]
@@ -219,6 +226,8 @@ def make_whatsapp_url(row: dict) -> str:
         lines.append(f"{_IM} {_br(price)}")
     if comm:
         lines.append(f"{_IW} Comissao: {comm}%")
+    if sold:
+        lines.append(f"{_IP} {sold:,} vendas")
     if url:
         lines += ["", f"{_IL} {url}"]
 

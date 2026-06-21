@@ -175,6 +175,8 @@ _IP = "\U0001F4E6"   # 📦  vendas
 _IH = "\U0001F3EA"   # 🏪  loja
 
 
+_WA_MAX = 8   # limite de produtos por envio — URL do wa.me quebra acima disso
+
 def _fmt_num(n: int) -> str:
     """Formata inteiro com separador de milhar brasileiro (ponto)."""
     return f"{n:,}".replace(",", ".")
@@ -470,8 +472,17 @@ with tab1:
         c_wa1, c_csv1 = st.columns([2, 1])
         with c_wa1:
             if sel1:
-                wa_text1 = build_wa_text_oportunidades(df.iloc[sel1])
-                wa_button(f"\U0001F4F2 Enviar {len(sel1)} produto(s) para WhatsApp", wa_text1)
+                n1 = len(sel1)
+                if n1 > _WA_MAX:
+                    st.warning(
+                        f"Muitos produtos selecionados ({n1}). "
+                        f"O WhatsApp quebra links longos — enviando apenas os primeiros {_WA_MAX}."
+                    )
+                rows1 = df.iloc[sel1[:_WA_MAX]]
+                wa_button(
+                    f"\U0001F4F2 Enviar {min(n1, _WA_MAX)} produto(s) para WhatsApp",
+                    build_wa_text_oportunidades(rows1),
+                )
             else:
                 st.caption("Selecione linhas na tabela para enviar vários de uma vez.")
         with c_csv1:
@@ -580,8 +591,17 @@ with tab2:
         c_wa2, c_csv2 = st.columns([2, 1])
         with c_wa2:
             if sel2:
-                wa_text2 = build_wa_text_produtos(df2.iloc[sel2])
-                wa_button(f"\U0001F4F2 Enviar {len(sel2)} produto(s) para WhatsApp", wa_text2)
+                n2 = len(sel2)
+                if n2 > _WA_MAX:
+                    st.warning(
+                        f"Muitos produtos selecionados ({n2}). "
+                        f"O WhatsApp quebra links longos — enviando apenas os primeiros {_WA_MAX}."
+                    )
+                rows2 = df2.iloc[sel2[:_WA_MAX]]
+                wa_button(
+                    f"\U0001F4F2 Enviar {min(n2, _WA_MAX)} produto(s) para WhatsApp",
+                    build_wa_text_produtos(rows2),
+                )
             else:
                 st.caption("Selecione linhas na tabela para enviar vários de uma vez.")
         with c_csv2:
@@ -666,8 +686,17 @@ with tab3:
         c_wa3, c_csv3 = st.columns([2, 1])
         with c_wa3:
             if sel3:
-                wa_text3 = build_wa_text_produtos(df3.iloc[sel3])
-                wa_button(f"\U0001F4F2 Enviar {len(sel3)} produto(s) para WhatsApp", wa_text3)
+                n3 = len(sel3)
+                if n3 > _WA_MAX:
+                    st.warning(
+                        f"Muitos produtos selecionados ({n3}). "
+                        f"O WhatsApp quebra links longos — enviando apenas os primeiros {_WA_MAX}."
+                    )
+                rows3 = df3.iloc[sel3[:_WA_MAX]]
+                wa_button(
+                    f"\U0001F4F2 Enviar {min(n3, _WA_MAX)} produto(s) para WhatsApp",
+                    build_wa_text_produtos(rows3),
+                )
             else:
                 st.caption("Selecione linhas na tabela para enviar vários de uma vez.")
         with c_csv3:

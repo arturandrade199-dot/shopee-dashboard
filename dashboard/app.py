@@ -121,14 +121,18 @@ def _wa_link(text: str) -> str:
 
 def wa_button(label: str, raw_text: str) -> None:
     """
-    Botão WhatsApp usando JavaScript encodeURIComponent.
-    IMPORTANTE: o texto JSON NÃO pode ficar no atributo onclick="" porque
-    json.dumps() produz aspas duplas que quebram o atributo HTML.
-    Solução: colocar o texto em uma variável JS num bloco <script>.
+    Botão WhatsApp com emojis corretos.
+
+    Pipeline:
+      1. Python percent-encodes o texto completo → string ASCII pura (sem emoji raw,
+         sem surrogates JSON, sem nada que possa ser corrompido pelo Streamlit)
+      2. JavaScript decodeURIComponent() reconstrói o texto original com emojis
+      3. JavaScript encodeURIComponent() re-codifica corretamente para o URL wa.me
+
+    Isso garante que nenhuma camada do Streamlit/React/WebSocket toca nos emojis.
     """
-    # ensure_ascii=True → emojis viram \\uXXXX (seguro em <script>)
-    # replace("<\/") → evita que "</script>" no texto encerre o bloco prematuramente
-    js_text = json.dumps(raw_text, ensure_ascii=True).replace("</", "<\\/")
+    # urllib.parse.quote encodes TUDO incluindo ' \ e emojis → ASCII pura, sem riscos
+    pct_text = urllib.parse.quote(raw_text, safe="", encoding="utf-8")
     label_safe = label.replace("<", "&lt;").replace(">", "&gt;")
     components.html(
         f"""
@@ -140,8 +144,9 @@ def wa_button(label: str, raw_text: str) -> None:
         </button>
         <script>
         document.getElementById('wa-btn').onclick = function() {{
-            var url = 'https://wa.me/?text=' + encodeURIComponent({js_text});
-            window.open(url, '_blank');
+            var encoded = '{pct_text}';
+            var text = decodeURIComponent(encoded);
+            window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
         }};
         </script>
         """,

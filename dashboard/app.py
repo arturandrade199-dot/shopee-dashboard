@@ -112,6 +112,11 @@ def load_extraidos(batch: str) -> pd.DataFrame:
     return pd.DataFrame(res.data or [])
 
 
+def _wa_link(text: str) -> str:
+    """Gera URL wa.me com texto codificado corretamente (equivalente a encodeURIComponent)."""
+    return "https://wa.me/?text=" + urllib.parse.quote(text, safe="", encoding="utf-8")
+
+
 def _br(v: float) -> str:
     """Formata float como moeda brasileira: 1.234,56"""
     return f"R$ {v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
@@ -138,7 +143,7 @@ def build_wa_multi_oportunidades(rows: pd.DataFrame) -> str:
             lines.append(f"🔗 {url}")
         if i < n:
             lines.append("─────────────────")
-    return "https://wa.me/?text=" + urllib.parse.quote("\n".join(lines))
+    return _wa_link("\n".join(lines))
 
 
 def build_wa_multi_produtos(rows: pd.DataFrame) -> str:
@@ -161,7 +166,7 @@ def build_wa_multi_produtos(rows: pd.DataFrame) -> str:
             lines.append(f"🔗 {url}")
         if i < n:
             lines.append("─────────────────")
-    return "https://wa.me/?text=" + urllib.parse.quote("\n".join(lines))
+    return _wa_link("\n".join(lines))
 
 
 def make_whatsapp_url_oportunidade(row: dict) -> str:
@@ -186,7 +191,7 @@ def make_whatsapp_url_oportunidade(row: dict) -> str:
     if url:
         lines += ["", f"🔗 {url}"]
 
-    return "https://wa.me/?text=" + urllib.parse.quote("\n".join(lines))
+    return _wa_link("\n".join(lines))
 
 
 def make_whatsapp_url(row: dict) -> str:
@@ -206,7 +211,7 @@ def make_whatsapp_url(row: dict) -> str:
     if url:
         lines += ["", f"🔗 {url}"]
 
-    return "https://wa.me/?text=" + urllib.parse.quote("\n".join(lines))
+    return _wa_link("\n".join(lines))
 
 
 def mark_batch_extracted(batch_date: str) -> int:

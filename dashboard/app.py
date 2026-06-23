@@ -69,12 +69,13 @@ def load_batches() -> list[str]:
 
 
 @st.cache_data(ttl=300)
-def load_oportunidades(sold_max: int, ratio_min: int, batch: str) -> pd.DataFrame:
+def load_oportunidades(sold_min: int, sold_max: int, ratio_min: int, batch: str) -> pd.DataFrame:
     sb = get_supabase()
     q = (
         sb.table("vw_oportunidades")
         .select("*")
         .eq("is_extracted", False)
+        .gte("vendas_alvo", sold_min)
         .lte("vendas_alvo", sold_max)
         .gte("ratio_mercado_vs_alvo", ratio_min)
     )
@@ -361,11 +362,12 @@ with tab1:
 
     col_f1, col_f2 = st.columns(2)
     with col_f1:
-        sold_max = st.slider(
-            "Vendas máximas do produto alvo",
-            min_value=10, max_value=2000, value=500, step=50,
-            help="Menor = menos concorrência de afiliados.",
+        sold_range = st.slider(
+            "Vendas do produto alvo",
+            min_value=0, max_value=5000, value=(0, 500), step=50,
+            help="Filtra produtos com vendas entre os dois valores.",
         )
+        sold_min, sold_max = sold_range
     with col_f2:
         ratio_min = st.slider(
             "Ratio mínimo (mercado ÷ alvo)",
@@ -374,7 +376,7 @@ with tab1:
         )
 
     try:
-        df = load_oportunidades(sold_max, ratio_min, batch_sel)
+        df = load_oportunidades(sold_min, sold_max, ratio_min, batch_sel)
     except Exception as e:
         st.error(f"Erro: {e}")
         st.info("Verifique se a migration 002 foi aplicada no Supabase.")

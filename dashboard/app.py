@@ -154,6 +154,15 @@ def wa_button(label: str, raw_text: str) -> None:
     )
 
 
+def _n(v, t=float, default=0):
+    """Converte v para tipo t ignorando None/NaN do pandas."""
+    try:
+        f = float(v)
+        return default if f != f else t(f)  # f != f é True para NaN
+    except (TypeError, ValueError):
+        return default
+
+
 def _br(v: float) -> str:
     """Formata float como moeda brasileira: 1.234,56"""
     return f"R$ {v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
@@ -187,10 +196,10 @@ def build_wa_text_oportunidades(rows: pd.DataFrame) -> str:
     lines = [f"{_IC} *OPORTUNIDADES SELECIONADAS ({n})*", ""]
     for i, (_, r) in enumerate(rows.iterrows(), 1):
         title    = str(r.get("produto_alvo", ""))[:65]
-        price    = float(r.get("preco_alvo", 0) or 0)
-        comm_pct = int(r.get("comissao_produto_validador_pct", 0) or 0)
-        comm_val = float(r.get("comissao_video_estimada", 0) or 0)
-        mercado  = int(r.get("maior_venda_mercado", 0) or 0)
+        price    = _n(r.get("preco_alvo"))
+        comm_pct = _n(r.get("comissao_produto_validador_pct"), int)
+        comm_val = _n(r.get("comissao_video_estimada"))
+        mercado  = _n(r.get("maior_venda_mercado"), int)
         url      = _short_url(str(r.get("url_alvo", "") or ""))
         lines.append(f"*{i}.* {title}")
         if price:
@@ -209,11 +218,11 @@ def build_wa_text_produtos(rows: pd.DataFrame) -> str:
     lines = [f"{_IC} *PRODUTOS SELECIONADOS ({n})*", ""]
     for i, (_, r) in enumerate(rows.iterrows(), 1):
         title    = str(r.get("title", ""))[:65]
-        price    = float(r.get("price", 0) or 0)
-        orig     = float(r.get("original_price", 0) or 0)
-        comm_pct = int(r.get("total_commission_pct", 0) or 0)
+        price    = _n(r.get("price"))
+        orig     = _n(r.get("original_price"))
+        comm_pct = _n(r.get("total_commission_pct"), int)
         url      = _short_url(str(r.get("affiliate_url", "") or ""))
-        sold     = int(r.get("sold_num", 0) or 0)
+        sold     = _n(r.get("sold_num"), int)
         lines.append(f"*{i}.* {title}")
         if orig and orig > price:
             lines.append(f"{_IF} DE {_br(orig)} | POR {_br(price)}")
@@ -232,11 +241,11 @@ def build_wa_text_produtos(rows: pd.DataFrame) -> str:
 
 def make_whatsapp_url_oportunidade(row: dict) -> str:
     title    = str(row.get("produto_alvo", ""))
-    price    = float(row.get("preco_alvo", 0) or 0)
-    rating   = float(row.get("rating_alvo", 0) or 0)
-    mercado  = int(row.get("maior_venda_mercado", 0) or 0)
-    comm_pct = int(row.get("comissao_produto_validador_pct", 0) or 0)
-    comm_val = float(row.get("comissao_video_estimada", 0) or 0)
+    price    = _n(row.get("preco_alvo"))
+    rating   = _n(row.get("rating_alvo"))
+    mercado  = _n(row.get("maior_venda_mercado"), int)
+    comm_pct = _n(row.get("comissao_produto_validador_pct"), int)
+    comm_val = _n(row.get("comissao_video_estimada"))
     loja     = str(row.get("loja", "") or "")
     url      = _short_url(str(row.get("url_alvo", "") or ""))
 
@@ -257,10 +266,10 @@ def make_whatsapp_url_oportunidade(row: dict) -> str:
 
 def make_whatsapp_url(row: dict) -> str:
     title = str(row.get("title", ""))
-    price = float(row.get("price", 0) or 0)
-    orig  = float(row.get("original_price", 0) or 0)
-    comm  = int(row.get("total_commission_pct", 0) or 0)
-    sold  = int(row.get("sold_num", 0) or 0)
+    price = _n(row.get("price"))
+    orig  = _n(row.get("original_price"))
+    comm  = _n(row.get("total_commission_pct"), int)
+    sold  = _n(row.get("sold_num"), int)
     url   = _short_url(str(row.get("affiliate_url", "") or row.get("product_url", "") or ""))
 
     lines = [f"{_IC} *{title}*", ""]

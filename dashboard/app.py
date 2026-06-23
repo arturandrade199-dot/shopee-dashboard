@@ -364,7 +364,7 @@ with tab1:
     with col_f1:
         sold_range = st.slider(
             "Vendas do produto alvo",
-            min_value=0, max_value=5000, value=(0, 500), step=50,
+            min_value=0, max_value=5000, value=(0, 500), step=1,
             help="Filtra produtos com vendas entre os dois valores.",
         )
         sold_min, sold_max = sold_range

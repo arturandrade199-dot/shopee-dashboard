@@ -433,8 +433,11 @@ with tab1:
             "**alto** (mercado grande = demanda provada) + **cor quente** (ratio alto)."
         )
 
+        scatter_df = df.copy()
+        scatter_df["rating_alvo"] = scatter_df["rating_alvo"].fillna(0).clip(lower=0.1)
+
         fig = px.scatter(
-            df,
+            scatter_df,
             x="vendas_alvo",
             y="maior_venda_mercado",
             color="ratio_mercado_vs_alvo",

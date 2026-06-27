@@ -69,7 +69,15 @@ def load_batches() -> list[str]:
 
 
 @st.cache_data(ttl=300)
-def load_oportunidades(sold_min: int, sold_max: int, ratio_min: int, batch: str) -> pd.DataFrame:
+def load_oportunidades(
+    sold_min: int,
+    sold_max: int,
+    ratio_min: int,
+    batch: str,
+    vendas_validador_min: int = 5000,
+    mercado_min: int = 5000,
+    rating_alvo_min: float = 4.0,
+) -> pd.DataFrame:
     sb = get_supabase()
     q = (
         sb.table("vw_oportunidades")
@@ -78,7 +86,11 @@ def load_oportunidades(sold_min: int, sold_max: int, ratio_min: int, batch: str)
         .gte("vendas_alvo", sold_min)
         .lte("vendas_alvo", sold_max)
         .gte("ratio_mercado_vs_alvo", ratio_min)
+        .gte("vendas_validador", vendas_validador_min)
+        .gte("maior_venda_mercado", mercado_min)
     )
+    if rating_alvo_min > 0:
+        q = q.gte("rating_alvo", rating_alvo_min)
     if batch != "Todas":
         q = q.eq("batch_date", batch)
     res = q.order("ratio_mercado_vs_alvo", desc=True).limit(300).execute()
@@ -371,12 +383,33 @@ with tab1:
     with col_f2:
         ratio_min = st.slider(
             "Ratio mínimo (mercado ÷ alvo)",
-            min_value=5, max_value=1000, value=50, step=5,
+            min_value=0, max_value=1000, value=50, step=5,
             help="Maior = demanda mais comprovada pelo mercado.",
         )
 
+    col_f3, col_f4, col_f5 = st.columns(3)
+    with col_f3:
+        vendas_validador_min = st.slider(
+            "Mín. vendas do validador",
+            min_value=0, max_value=50000, value=5000, step=500,
+            help="Vendas mínimas do seu produto afiliado (o validador). Reduza para nichos de menor volume como queijo artesanal.",
+        )
+    with col_f4:
+        mercado_min = st.slider(
+            "Mín. prova de mercado",
+            min_value=0, max_value=100000, value=5000, step=500,
+            help="Vendas mínimas do maior concorrente na categoria. Reduza para categorias de nicho.",
+        )
+    with col_f5:
+        rating_alvo_min = st.slider(
+            "Rating mínimo do alvo",
+            min_value=0.0, max_value=5.0, value=4.0, step=0.1,
+            help="Rating mínimo do produto alvo (same_seller). Use 0 para incluir produtos sem avaliação.",
+        )
+
     try:
-        df = load_oportunidades(sold_min, sold_max, ratio_min, batch_sel)
+        df = load_oportunidades(sold_min, sold_max, ratio_min, batch_sel,
+                                vendas_validador_min, mercado_min, rating_alvo_min)
     except Exception as e:
         st.error(f"Erro: {e}")
         st.info("Verifique se a migration 002 foi aplicada no Supabase.")
